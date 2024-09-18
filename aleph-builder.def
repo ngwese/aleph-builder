@@ -1,0 +1,65 @@
+Bootstrap: library
+From: debian:11
+Stage: build
+
+%environment
+	export LC_ALL=C
+	export PATH=/opt/avr/bin:/opt/bfin/bin:${PATH}
+
+%post
+	export DEBIAN_FRONTEND=noninteractive
+	export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+	
+	apt-get update && apt-get upgrade -y
+
+	# common build
+	apt-get install -y \
+		pkg-config \
+		build-essential \
+		git \
+		make \
+		wget \
+		tree \
+		file \
+		unzip \
+		udisks2 \
+		strace \
+		ripgrep \
+		fd-find
+	
+	apt-get clean
+		
+	ln -s /usr/bin/fdfind /usr/bin/fd
+
+	mkdir -pv /opt
+	
+	mkdir /install
+	cd /install
+	
+	# aleph avr32
+	export PIN_ATMEL_TOOLCHAIN=3.4.2.435
+	wget https://ww1.microchip.com/downloads/en/DeviceDoc/avr32-gnu-toolchain-${PIN_ATMEL_TOOLCHAIN}-linux.any.x86_64.tar.gz
+	mkdir -pv /opt/avr
+	tar zxvf avr32-gnu-toolchain-${PIN_ATMEL_TOOLCHAIN}-linux.any.x86_64.tar.gz -C /opt/avr --strip-components=1
+	
+	export PIN_ATMEL_HEADERS=6.1.3.1475
+	wget https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/SoftwareLibraries/Firmware/atmel-headers-${PIN_ATMEL_HEADERS}.zip
+	unzip atmel-headers-${PIN_ATMEL_HEADERS}.zip
+	mv -v atmel-headers-${PIN_ATMEL_HEADERS}/avr* /opt/avr/avr32/include/
+	# mv -v atmel-headers-${PIN_ATMEL_HEADERS}/avr* /opt/avr32-gnu-toolchain-linux_x86_64/avr32/include/
+	
+	# aleph blackfin
+	export PIN_BLACKFIN_TOOLCHAIN=4.3-2014R1-RC2
+	wget https://downloads.sourceforge.net/project/adi-toolchain/2014R1/2014R1-RC2/x86_64/blackfin-toolchain-elf-gcc-${PIN_BLACKFIN_TOOLCHAIN}.x86_64.tar.bz2
+	mkdir -pv /opt/bfin
+	# NOTE: Verify we aren't stripping too much out of the path and dumping files
+	tar jxvf blackfin-toolchain-elf-gcc-${PIN_BLACKFIN_TOOLCHAIN}.x86_64.tar.bz2 -C /opt/bfin --strip-components=4
+
+	# cleanup
+	rm -rf /install
+	
+%runscript
+	# cd $HOME
+	bash
+
+
