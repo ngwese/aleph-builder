@@ -1,6 +1,6 @@
 # aleph-builder
 
-a singularity contianer definition for the avr32 and blackfin toolchains and
+a singularity containner definition for the avr32 and blackfin toolchains and
 supporting commands required to build firmware for the monome aleph.
 
 _NOTE: this container assumes a x86_64 linux host_
