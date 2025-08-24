@@ -27,7 +27,7 @@ compiling bees application
 
 ```sh
 # singularity images can be run directly to get a shell, similar to a venv
-./aleph-builder.sif
+./aleph-builder.sif bash
 
 # the initial path will be the same a $PWD, na
 Singularity> cd aleph/apps/bees
@@ -37,18 +37,18 @@ Singularity> make R=1
 compiling lines module
 
 ```sh
-./aleph-builder.sif
+./aleph-builder.sif bash
 Singularity> cd aleph/modules/lines
 Singularity> make
 ```
 
-alternatively the `run.sh` script can be used to execute any command from
-within the container in the current working directory.
+alternatively copy `aleph-builder.sif` (renaming it if desired) to a directory on `$PATH` and any command within the container in the current working directory by passing it as an argument:
 
 ```sh
 # run directly on the compilation host
 cd aleph/apps/bees
-../../../run.sh make R=1
+aleph-builder.sif make R=1
+...
 ```
 
 the `run.sh` script expects to find the `aleph-builder.sif` file in the same
@@ -56,8 +56,7 @@ directory. the script can be modified to suite in order to integrate it into
 one's editor of choice. any command can be run, for instance:
 
 ```sh
-./run.sh avr32-gcc --version
-+ singularity exec ./aleph-builder.sif avr32-gcc --version
+aleph-builder.sif avr32-gcc --version
 avr32-gcc (AVR_32_bit_GNU_Toolchain_3.4.2_435) 4.4.7
 Copyright (C) 2010 Free Software Foundation, Inc.
 This is free software; see the source for copying conditions.  There is NO

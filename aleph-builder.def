@@ -62,4 +62,4 @@ Stage: build
 
 %runscript
 	# cd $HOME
-	bash
+	exec $*
