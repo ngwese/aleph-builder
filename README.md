@@ -12,8 +12,19 @@ _NOTE: this container assumes a x86_64 linux host_
 ## building
 
 ```sh
-sudo singularity build --force aleph-builder.sif aleph-builder.def
+make
 ```
+
+this builds `aleph-builder.sif` in the local directory from `aleph-builder.def`.
+
+## installation
+
+```sh
+make install
+```
+
+installs the image as `aleph-builder` in `~/.local/bin` (ensure that directory
+is on your `$PATH`).
 
 ## usage
 
@@ -27,36 +38,22 @@ compiling bees application
 
 ```sh
 # singularity images can be run directly to get a shell, similar to a venv
-./aleph-builder.sif bash
-
-# the initial path will be the same a $PWD, na
-Singularity> cd aleph/apps/bees
-Singularity> make R=1
+cd aleph/apps/bees
+aleph-builder make R=1
 ```
 
 compiling lines module
 
 ```sh
-./aleph-builder.sif bash
-Singularity> cd aleph/modules/lines
-Singularity> make
+cd aleph/modules/lines
+aleph-builder make
 ```
 
-alternatively copy `aleph-builder.sif` (renaming it if desired) to a directory on `$PATH` and any command within the container in the current working directory by passing it as an argument:
+any command within the container can be run in the current working directory by
+passing it as an argument:
 
 ```sh
-# run directly on the compilation host
-cd aleph/apps/bees
-aleph-builder.sif make R=1
-...
-```
-
-the `run.sh` script expects to find the `aleph-builder.sif` file in the same
-directory. the script can be modified to suite in order to integrate it into
-one's editor of choice. any command can be run, for instance:
-
-```sh
-aleph-builder.sif avr32-gcc --version
+aleph-builder avr32-gcc --version
 avr32-gcc (AVR_32_bit_GNU_Toolchain_3.4.2_435) 4.4.7
 Copyright (C) 2010 Free Software Foundation, Inc.
 This is free software; see the source for copying conditions.  There is NO
@@ -66,6 +63,6 @@ warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 export toolchain headers for IDE include paths
 
 ```sh
-aleph-builder.sif export-avr-headers ./avr-headers
-aleph-builder.sif export-bfin-headers ./bfin-headers
+aleph-builder export-avr-headers ./avr-headers
+aleph-builder export-bfin-headers ./bfin-headers
 ```
