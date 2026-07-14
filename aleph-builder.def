@@ -9,6 +9,7 @@ Stage: build
 	export PATH=/opt/avr/bin:/opt/bfin/bin:${PATH}
 
 %files
+	scripts/clang-format /usr/local/bin/clang-format
 	scripts/export-avr-headers /usr/local/bin/export-avr-headers
 	scripts/export-bfin-headers /usr/local/bin/export-bfin-headers
 
@@ -65,7 +66,7 @@ Stage: build
 	# cleanup
 	rm -rf /install
 
-	chmod 755 /usr/local/bin/export-avr-headers /usr/local/bin/export-bfin-headers
+	chmod 755 /usr/local/bin/clang-format /usr/local/bin/export-avr-headers /usr/local/bin/export-bfin-headers
 
 %runscript
 	# cd $HOME
