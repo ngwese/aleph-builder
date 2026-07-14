@@ -10,7 +10,7 @@ all: build
 build: $(IMAGE)
 
 $(IMAGE): $(DEF)
-	singularity build -f $@ $<
+	singularity build --force -f $@ $<
 
 run: $(IMAGE)
 	singularity run $(IMAGE)
