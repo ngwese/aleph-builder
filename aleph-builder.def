@@ -27,7 +27,8 @@ Stage: build
 		udisks2 \
 		strace \
 		ripgrep \
-		fd-find
+		fd-find \
+        clang-format-19
 
 	apt-get clean
 
