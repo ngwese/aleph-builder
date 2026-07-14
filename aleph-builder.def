@@ -8,6 +8,10 @@ Stage: build
 	export LC_ALL=C
 	export PATH=/opt/avr/bin:/opt/bfin/bin:${PATH}
 
+%files
+	scripts/export-avr-headers /usr/local/bin/export-avr-headers
+	scripts/export-bfin-headers /usr/local/bin/export-bfin-headers
+
 %post
 	export DEBIAN_FRONTEND=noninteractive
 	export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
@@ -60,6 +64,8 @@ Stage: build
 
 	# cleanup
 	rm -rf /install
+
+	chmod 755 /usr/local/bin/export-avr-headers /usr/local/bin/export-bfin-headers
 
 %runscript
 	# cd $HOME

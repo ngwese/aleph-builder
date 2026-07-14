@@ -62,3 +62,10 @@ Copyright (C) 2010 Free Software Foundation, Inc.
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ```
+
+export toolchain headers for IDE include paths
+
+```sh
+aleph-builder.sif export-avr-headers ./avr-headers
+aleph-builder.sif export-bfin-headers ./bfin-headers
+```
