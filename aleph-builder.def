@@ -12,6 +12,7 @@ Stage: build
 	scripts/clang-format /usr/local/bin/clang-format
 	scripts/export-avr-headers /usr/local/bin/export-avr-headers
 	scripts/export-bfin-headers /usr/local/bin/export-bfin-headers
+	tools/bintool /install/bintool
 
 %post
 	export DEBIAN_FRONTEND=noninteractive
@@ -41,7 +42,7 @@ Stage: build
 
 	mkdir -pv /opt
 
-	mkdir /install
+	mkdir -pv /install
 	cd /install
 
 	# aleph avr32
@@ -55,7 +56,7 @@ Stage: build
 	wget https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/SoftwareLibraries/Firmware/atmel-headers-${PIN_ATMEL_HEADERS}.zip
 	unzip atmel-headers-${PIN_ATMEL_HEADERS}.zip
 	mv -v atmel-headers-${PIN_ATMEL_HEADERS}/avr* /opt/avr/avr32/include/
-	
+
 	# aleph blackfin
 	export PIN_BLACKFIN_TOOLCHAIN=4.3-2014R1-RC2
 	wget https://downloads.sourceforge.net/project/adi-toolchain/2014R1/2014R1-RC2/x86_64/blackfin-toolchain-elf-gcc-${PIN_BLACKFIN_TOOLCHAIN}.x86_64.tar.bz2
@@ -63,10 +64,13 @@ Stage: build
 	# NOTE: Verify we aren't stripping too much out of the path and dumping files
 	tar jxvf blackfin-toolchain-elf-gcc-${PIN_BLACKFIN_TOOLCHAIN}.x86_64.tar.bz2 -C /opt/bfin --strip-components=4
 
+	# bintool
+	gcc /install/bintool/bintool.c -o /usr/local/bin/bintool
+
 	# cleanup
 	rm -rf /install
 
-	chmod 755 /usr/local/bin/clang-format /usr/local/bin/export-avr-headers /usr/local/bin/export-bfin-headers
+	chmod 755 /usr/local/bin/clang-format /usr/local/bin/export-avr-headers /usr/local/bin/export-bfin-headers /usr/local/bin/bintool
 
 %runscript
 	# cd $HOME
