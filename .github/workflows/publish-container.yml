@@ -2,7 +2,12 @@ name: publish container
 
 on:
   push:
-    branches: [main]
+    paths:
+      - aleph-builder.def
+      - scripts/**
+      - tools/**
+      - .github/workflows/publish-container.yml
+  pull_request:
     paths:
       - aleph-builder.def
       - scripts/**
@@ -12,7 +17,7 @@ on:
 
 jobs:
   build-and-publish:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
@@ -21,13 +26,22 @@ jobs:
       - name: check out repository
         uses: actions/checkout@v4
 
-      - name: set up apptainer
-        uses: eWaterCycle/setup-apptainer@v2
-        with:
-          apptainer-version: 1.4.0
+      - name: install singularity
+        run: |
+          set -euo pipefail
+          # https://github.com/sylabs/singularity/releases/tag/v4.5.0
+          deb=singularity-ce_4.5.0-noble_amd64.deb
+          curl -fsSL -o "$deb" \
+            "https://github.com/sylabs/singularity/releases/download/v4.5.0/${deb}"
+          sudo apt-get update
+          # uidmap: --fakeroot user namespaces for unprivileged image builds
+          # squashfs-tools: assemble .sif / OCI squash layers
+          # libtalloc2: required by proot if fakeroot is unavailable
+          sudo apt-get install -y "./${deb}" uidmap squashfs-tools libtalloc2
+          singularity --version
 
       - name: build singularity image
-        run: apptainer build --force aleph-builder.sif aleph-builder.def
+        run: singularity build --fakeroot --force aleph-builder.sif aleph-builder.def
 
       - name: publish to ghcr.io
         run: |
@@ -38,7 +52,11 @@ jobs:
           image="oras://ghcr.io/${owner}/${name}"
 
           echo "${{ secrets.GITHUB_TOKEN }}" | \
-            apptainer registry login -u '${{ github.actor }}' --password-stdin oras://ghcr.io
+            singularity registry login -u '${{ github.actor }}' --password-stdin oras://ghcr.io
 
-          apptainer push aleph-builder.sif "${image}:${short_sha}"
-          apptainer push aleph-builder.sif "${image}:latest"
+          singularity push aleph-builder.sif "${image}:${short_sha}"
+
+          # only move :latest on pushes to main (not PRs or other branches)
+          if [ '${{ github.ref }}' = 'refs/heads/main' ]; then
+            singularity push aleph-builder.sif "${image}:latest"
+          fi
