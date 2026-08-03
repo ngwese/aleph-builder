@@ -1,5 +1,7 @@
 # aleph-builder
 
+[![publish container](https://github.com/ngwese/aleph-builder/actions/workflows/publish-container.yml/badge.svg)](https://github.com/ngwese/aleph-builder/actions/workflows/publish-container.yml)
+
 a singularity container definition for the avr32 and blackfin toolchains and
 supporting commands required to build firmware for the monome aleph.
 
