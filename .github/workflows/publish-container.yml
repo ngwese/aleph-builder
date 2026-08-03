@@ -1,0 +1,44 @@
+name: publish container
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - aleph-builder.def
+      - scripts/**
+      - tools/**
+      - .github/workflows/publish-container.yml
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: check out repository
+        uses: actions/checkout@v4
+
+      - name: set up apptainer
+        uses: eWaterCycle/setup-apptainer@v2
+        with:
+          apptainer-version: 1.4.0
+
+      - name: build singularity image
+        run: apptainer build --force aleph-builder.sif aleph-builder.def
+
+      - name: publish to ghcr.io
+        run: |
+          set -euo pipefail
+          owner="$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
+          name="$(echo '${{ github.event.repository.name }}' | tr '[:upper:]' '[:lower:]')"
+          short_sha="${GITHUB_SHA::7}"
+          image="oras://ghcr.io/${owner}/${name}"
+
+          echo "${{ secrets.GITHUB_TOKEN }}" | \
+            apptainer registry login -u '${{ github.actor }}' --password-stdin oras://ghcr.io
+
+          apptainer push aleph-builder.sif "${image}:${short_sha}"
+          apptainer push aleph-builder.sif "${image}:latest"
