@@ -1,6 +1,6 @@
 # aleph-builder
 
-[![publish container](https://github.com/ngwese/aleph-builder/actions/workflows/publish-container.yml/badge.svg)](https://github.com/ngwese/aleph-builder/actions/workflows/publish-container.yml)
+[publish container](https://github.com/ngwese/aleph-builder/actions/workflows/publish-container.yml)
 
 a singularity container definition for the avr32 and blackfin toolchains and
 supporting commands required to build firmware for the monome aleph.
@@ -9,7 +9,36 @@ unlike docker, singularity provides access to the underlying host filesystem,
 devices, etc. and runs tools as the current user which greatly simplifies the
 workflow.
 
-_NOTE: this container assumes a x86_64 linux host_
+*NOTE: this container assumes a x86_64 linux host*
+
+## installation
+
+ensure `~/.local/bin` is on your `$PATH`, then either pull a published image or
+install one you built locally.
+
+pull the published image from ghcr (recommended):
+
+```sh
+singularity pull --force ~/.local/bin/aleph-builder \
+  oras://ghcr.io/ngwese/aleph-builder:latest
+```
+
+or, install the locally built image:
+
+```sh
+make && make install
+```
+
+both place an executable `aleph-builder` in `~/.local/bin`.
+
+it is possible to run the image directly via `singularity run` without
+installation which can be useful in some situations like ci:
+
+```sh
+singularity run oras://ghcr.io/ngwese/aleph-builder:latest {make, avr32-gcc, export-avr-headers, etc.}
+```
+
+
 
 ## building
 
@@ -17,16 +46,7 @@ _NOTE: this container assumes a x86_64 linux host_
 make
 ```
 
-this builds `aleph-builder.sif` in the local directory from `aleph-builder.def`.
-
-## installation
-
-```sh
-make install
-```
-
-installs the image as `aleph-builder` in `~/.local/bin` (ensure that directory
-is on your `$PATH`).
+this builds `aleph-builder.sif` in the local directory from `aleph-builder.def`. 
 
 ## usage
 
@@ -68,3 +88,4 @@ export toolchain headers for IDE include paths
 aleph-builder export-avr-headers ./avr-headers
 aleph-builder export-bfin-headers ./bfin-headers
 ```
+
